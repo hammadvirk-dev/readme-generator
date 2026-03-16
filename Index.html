@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>README Generator — by Hammad Virk</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0a0a0f;--surface:#13131a;--border:#2a2a3a;--accent:#00ff88;--accent2:#7b61ff;--text:#e8e8f0;--muted:#666680;--danger:#ff4466;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-text-size-adjust:100%;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,136,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.nav{position:sticky;top:0;z-index:50;background:rgba(10,10,15,0.93);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 16px;}
+.nav-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:52px;gap:8px;}
+.nav-logo{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap;}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{background:transparent;border:1px solid transparent;border-radius:8px;padding:6px 13px;color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.nav-tab:hover{color:var(--text);border-color:var(--border);}
+.nav-tab.active{background:rgba(0,255,136,0.1);border-color:rgba(0,255,136,0.3);color:var(--accent);}
+.container{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:20px 16px 80px;}
+.page{display:none;}.page.active{display:block;}
+header{text-align:center;padding:30px 0 24px;}
+.badge{display:inline-block;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);color:var(--accent);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;padding:5px 14px;border-radius:20px;margin-bottom:14px;text-transform:uppercase;}
+h1{font-size:clamp(30px,8vw,54px);font-weight:800;line-height:1.05;letter-spacing:-1px;}
+h1 .grad{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.subtitle{color:var(--muted);font-size:14px;margin-top:10px;line-height:1.5;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;}
+.card-title{font-size:11px;font-family:'Space Mono',monospace;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.api-wrap{display:flex;flex-direction:column;gap:10px;}
+.api-input-row{display:flex;gap:8px;align-items:stretch;}
+.api-input-row input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;outline:none;transition:border-color .2s;}
+.api-input-row input:focus{border-color:var(--accent2);}
+.api-btn-row{display:flex;gap:8px;}
+.icon-btn{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.5px;flex:1;text-align:center;-webkit-tap-highlight-color:transparent;}
+.icon-btn:hover{border-color:var(--accent2);color:var(--text);}
+.icon-btn.save{border-color:rgba(0,255,136,.4);color:var(--accent);}
+.icon-btn.save:hover{background:rgba(0,255,136,.08);}
+.icon-btn.del{border-color:rgba(255,68,102,.4);color:var(--danger);}
+.icon-btn.del:hover{background:rgba(255,68,102,.08);}
+.icon-btn.vis{flex:0 0 auto;padding:10px 13px;}
+.save-status{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);padding:2px 0;}
+.form-grid{display:flex;flex-direction:column;gap:12px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field label{display:block;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+input[type="text"],textarea,select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;}
+input[type="text"]:focus,textarea:focus,select:focus{border-color:var(--accent);}
+textarea{resize:vertical;min-height:88px;line-height:1.5;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666680' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;}
+select option{background:#13131a;}
+.checks-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.check-item{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all .15s;font-size:13px;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;}
+.check-item:hover{border-color:var(--accent2);}
+.check-item input[type="checkbox"]{display:none;}
+.dot{width:16px;height:16px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.check-item input:checked+.dot{background:var(--accent);border-color:var(--accent);}
+.check-item input:checked+.dot::after{content:'✓';font-size:10px;color:#000;font-weight:700;}
+.gen-btn{width:100%;background:linear-gradient(135deg,var(--accent),#00cc6a);border:none;border-radius:12px;padding:16px;color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;cursor:pointer;transition:all .2s;margin-top:4px;-webkit-tap-highlight-color:transparent;}
+.gen-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,255,136,.3);}
+.gen-btn:active{transform:scale(.98);}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+.error-msg{display:none;background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.3);border-radius:10px;padding:13px 16px;color:var(--danger);font-size:13px;font-family:'Space Mono',monospace;margin-top:12px;line-height:1.5;}
+.error-msg.show{display:block;}
+.loading{display:none;text-align:center;padding:40px 20px;}
+.loading.show{display:block;}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading p{color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.output-section{display:none;}.output-section.show{display:block;}
+.output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap;}
+.output-title{font-size:11px;font-family:'Space Mono',monospace;color:var(--accent);letter-spacing:2px;text-transform:uppercase;}
+.btn-row{display:flex;gap:8px;}
+.copy-btn,.download-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent);}
+.download-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.output-box{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.75;color:#b8b8d0;white-space:pre-wrap;word-break:break-word;max-height:480px;overflow-y:auto;}
+.output-box::-webkit-scrollbar{width:5px;}.output-box::-webkit-scrollbar-track{background:transparent;}.output-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+/* Help */
+.help-hero{text-align:center;padding:28px 0 24px;}
+.help-hero h2{font-size:clamp(22px,6vw,38px);font-weight:800;margin-bottom:8px;}
+.help-hero p{color:var(--muted);font-size:14px;}
+.section-heading{font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin:24px 0 12px;}
+.steps{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;}
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start;transition:border-color .2s;}
+.step-card:hover{border-color:var(--accent2);}
+.step-num{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent2),#5a45cc);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;color:#fff;flex-shrink:0;}
+.step-body h3{font-size:15px;font-weight:700;margin-bottom:6px;}
+.step-body p{font-size:13px;color:var(--muted);line-height:1.65;}
+.step-body .tip{display:inline-block;margin-top:8px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);border-radius:6px;padding:6px 10px;font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);line-height:1.5;}
+.faq-list{display:flex;flex-direction:column;gap:8px;}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.faq-q{width:100%;background:none;border:none;padding:16px 20px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;-webkit-tap-highlight-color:transparent;}
+.faq-q:hover{color:var(--accent);}
+.faq-arrow{font-size:11px;color:var(--muted);transition:transform .25s;flex-shrink:0;}
+.faq-item.open .faq-arrow{transform:rotate(180deg);}
+.faq-a{display:none;padding:14px 20px 16px;font-size:13px;color:var(--muted);line-height:1.65;border-top:1px solid var(--border);}
+.faq-item.open .faq-a{display:block;}
+.faq-a a{color:var(--accent);text-decoration:none;}.faq-a a:hover{text-decoration:underline;}
+.faq-a code{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-family:'Space Mono',monospace;font-size:11px;color:var(--accent2);}
+.info-box{background:rgba(123,97,255,.08);border:1px solid rgba(123,97,255,.25);border-radius:12px;padding:16px 18px;margin-bottom:14px;}
+.info-box-title{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.info-box p,.info-box li{font-size:13px;color:var(--muted);line-height:1.65;}
+.info-box ul{padding-left:18px;}.info-box li{margin-bottom:4px;}
+.cta-btn{display:block;width:100%;background:linear-gradient(135deg,var(--accent2),#5a45cc);border:none;border-radius:12px;padding:14px;color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;text-align:center;margin-top:24px;transition:all .2s;text-decoration:none;-webkit-tap-highlight-color:transparent;}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(123,97,255,.35);}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--accent);color:#000;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:10px 22px;border-radius:20px;transition:transform .3s ease;z-index:100;letter-spacing:1px;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+footer{text-align:center;padding-top:36px;color:var(--muted);font-size:11px;font-family:'Space Mono',monospace;line-height:2;}
+footer a{color:var(--accent);text-decoration:none;transition:opacity .2s;}
+footer a:hover{opacity:.7;}
+@media(max-width:599px){
+  .nav-logo{font-size:11px;}
+  .nav-tab{padding:5px 9px;font-size:10px;}
+  header{padding:20px 0 18px;}
+  .card{padding:16px;}
+  .api-input-row input{font-size:11px;padding:10px 11px;}
+  .icon-btn{padding:9px 10px;font-size:10px;}
+  .form-row{grid-template-columns:1fr;}
+  .checks-grid{grid-template-columns:1fr 1fr;}
+  .check-item{font-size:12px;padding:9px 10px;}
+  .gen-btn{font-size:15px;padding:14px;}
+  .output-box{font-size:11px;padding:14px;max-height:340px;}
+  .step-num{width:30px;height:30px;font-size:12px;}
+  .step-body h3{font-size:14px;}
+  .copy-btn,.download-btn{padding:7px 11px;font-size:10px;}
+  .faq-q{font-size:13px;padding:14px 16px;}
+  .faq-a{padding:12px 16px 14px;}
+}
+@media(max-width:359px){
+  .checks-grid{grid-template-columns:1fr;}
+  .nav-tab{padding:5px 7px;font-size:9px;letter-spacing:0;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">⚡ README.GEN</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('generator')">🛠 Generator</button>
+      <button class="nav-tab" onclick="showPage('help')">❓ Help</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- ══ GENERATOR PAGE ══ -->
+<div id="page-generator" class="page active">
+  <header>
+    <div class="badge">⚡ AI Powered Tool</div>
+    <h1>README<br/><span class="grad">Generator</span></h1>
+    <p class="subtitle">Professional README.md banao seconds mein<br/>AI ki madad se — Free &amp; Easy</p>
+  </header>
+
+  <div class="card">
+    <div class="card-title">🔑 Anthropic API Key</div>
+    <div class="api-wrap">
+      <div class="api-input-row">
+        <input type="password" id="apiKey" placeholder="sk-ant-api03-..." autocomplete="off"/>
+        <button class="icon-btn vis" onclick="toggleKey()" title="Show/Hide Key">👁</button>
+      </div>
+      <div class="api-btn-row">
+        <button class="icon-btn save" onclick="saveKey()">💾 Save Key</button>
+        <button class="icon-btn del" onclick="clearKey()">🗑 Remove</button>
+      </div>
+      <div class="save-status" id="saveStatus">Key saved nahi hai — daalo aur 💾 Save dabao</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📦 Project Details</div>
+    <div class="form-grid">
+      <div class="form-row">
+        <div class="field">
+          <label>Project Name *</label>
+          <input type="text" id="projectName" placeholder="My Awesome Project"/>
+        </div>
+        <div class="field">
+          <label>Tech Stack</label>
+          <input type="text" id="techStack" placeholder="Python, React, Node.js"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>Description *</label>
+        <textarea id="description" placeholder="Yeh project kya karta hai? Kya problem solve karta hai? Kaun use karega?"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>GitHub Username</label>
+          <input type="text" id="github" placeholder="your-username"/>
+        </div>
+        <div class="field">
+          <label>README Style</label>
+          <select id="style">
+            <option value="professional">Professional</option>
+            <option value="minimal">Minimal &amp; Clean</option>
+            <option value="detailed">Detailed &amp; Long</option>
+            <option value="fun">Fun &amp; Casual</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Sections Select Karo</div>
+    <div class="checks-grid">
+      <label class="check-item"><input type="checkbox" id="sec_install" checked/><span class="dot"></span> Installation</label>
+      <label class="check-item"><input type="checkbox" id="sec_usage" checked/><span class="dot"></span> Usage Guide</label>
+      <label class="check-item"><input type="checkbox" id="sec_features" checked/><span class="dot"></span> Features</label>
+      <label class="check-item"><input type="checkbox" id="sec_contribute" checked/><span class="dot"></span> Contributing</label>
+      <label class="check-item"><input type="checkbox" id="sec_license" checked/><span class="dot"></span> License</label>
+      <label class="check-item"><input type="checkbox" id="sec_badges"/><span class="dot"></span> Badges</label>
+      <label class="check-item"><input type="checkbox" id="sec_demo"/><span class="dot"></span> Demo Section</label>
+      <label class="check-item"><input type="checkbox" id="sec_faq"/><span class="dot"></span> FAQ</label>
+    </div>
+  </div>
+
+  <button class="gen-btn" onclick="generateReadme()" id="genBtn">⚡ Generate README</button>
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>AI README likh raha hai...</p>
+  </div>
+
+  <div class="output-section" id="outputSection">
+    <div class="card">
+      <div class="output-header">
+        <div class="output-title">✅ README Ready!</div>
+        <div class="btn-row">
+          <button class="copy-btn" onclick="copyReadme()">📋 Copy</button>
+          <button class="download-btn" onclick="downloadReadme()">⬇ Download</button>
+        </div>
+      </div>
+      <div class="output-box" id="outputBox"></div>
+    </div>
+  </div>
+
+  <footer>
+    Made with ❤️ by <a href="https://github.com/hammadvirk-dev" target="_blank">Hammad Virk</a><br/>
+    <a href="https://github.com/hammadvirk-dev" target="_blank">github.com/hammadvirk-dev</a>
+  </footer>
+</div>
+
+<!-- ══ HELP PAGE ══ -->
+<div id="page-help" class="page">
+  <div class="help-hero">
+    <div class="badge">📖 Complete Guide</div>
+    <h2>Kaise Use Karein?</h2>
+    <p>Step by step poori guide — beginner friendly</p>
+  </div>
+
+  <div class="section-heading">— Step by Step Guide —</div>
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Anthropic Account Banao</h3>
+        <p>Sabse pehle <strong>console.anthropic.com</strong> par jao aur free account banao. Sirf email aur password chahiye — bilkul free hai.</p>
+        <span class="tip">🔗 console.anthropic.com → Sign Up → Email verify karo</span>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>API Key Generate Karo</h3>
+        <p>Account mein login karo. Left sidebar mein <strong>"API Keys"</strong> par click karo. Phir <strong>"Create Key"</strong> dabao. Key copy karo — yeh sirf ek baar dikhti hai!</p>
+        <span class="tip">⚠️ Key kisi ke saath share mat karna — yeh tumhara secret password hai</span>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Key Yahan Daalo aur Save Karo</h3>
+        <p>Generator mein API Key field mein paste karo. Phir <strong>"💾 Save Key"</strong> dabao — browser mein save ho jayegi. Agli baar automatically load hogi.</p>
+        <span class="tip">✓ Save ke baad page band karke dobara kholo — key automatic load hogi</span>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>Project Details Bharo</h3>
+        <p><strong>Project Name:</strong> Apne project ka naam<br/><strong>Tech Stack:</strong> Python, React, etc.<br/><strong>Description:</strong> 3-4 lines mein problem aur solution<br/><strong>GitHub Username:</strong> Tumhara GitHub username</p>
+        <span class="tip">💡 Jitna acha description, utna acha README banega!</span>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h3>Style aur Sections Choose Karo</h3>
+        <p><strong>Professional:</strong> Portfolio ke liye &nbsp;|&nbsp; <strong>Minimal:</strong> Simple projects<br/><strong>Detailed:</s
